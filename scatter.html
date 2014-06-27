@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<style>
+ 
+    .chart rect {
+      fill: grey;
+        }
+    .chart text {
+      fill: steelblue;
+      font: 14px sans-serif;
+      text-anchor: start;
+        }
+    .chart svg {
+      border-left: solid 2px #ddd;
+      left: 360px;
+      position: absolute;
+      top: 0;
+    }
+    .chart circle {
+      stroke-width: 1.5px;
+    }
+
+</style>
+
+<svg class="chart"></svg>
+<script src="scripts/d3/d3.js"></script>
+
+<body>
+
+<script type="text/javascript">
+
+    //setting up the chart area
+
+    var w = 640;
+    var h = 330;
+    var d = 3;
+
+    var chart = d3.select(".chart")
+        .attr("width", w)
+        .attr("height", h);
+
+    var top = chart.append("rect")
+        .attr("width", w)
+        .attr("height", d)
+        .attr("x", 0)
+        .attr("y", 0);
+
+    var bottom = chart.append("rect")
+        .attr("width", w)
+        .attr("height", d)
+        .attr("x", 0)
+        .attr("y", h - d);
+
+    var left = chart.append("rect")
+        .attr("width", d)
+        .attr("height", h)
+        .attr("x", 0)
+        .attr("y", 0);
+
+    var right = chart.append("rect")
+        .attr("width", d)
+        .attr("height", h)
+        .attr("x", w - d)
+        .attr("y", 0);
+
+    //data, scales and axes
+
+    var scale = function (minin, maxin, minout, maxout, d) {
+        a = (d - minin) * ((maxout - minout) / (maxin - minin)) + minout;
+        return a;
+    };
+
+   //2d array
+    var array = [
+                {year: 2006, books: 31, readers: 30, sales: 0 },
+                {year: 2007, books: 43, readers: 15, sales: 3 },
+                {year: 2008, books: 41, readers: 20, sales: 6 },
+                {year: 2009, books: 44, readers: 10, sales: 8 },
+                {year: 2010, books: 35, readers: 5 , sales: 10},
+                ];
+
+    var mininx = d3.min(array, function (d) { return d.year; });
+    var maxinx = d3.max(array, function (d) { return d.year; });
+    var mininy = d3.min(array, function (d) { return d.books; });
+    var maxiny = d3.max(array, function (d) { return d.books; });
+    var mininr = d3.min(array, function (d) { return d.readers; });
+    var maxinr = d3.max(array, function (d) { return d.readers; });
+    var mininc = d3.min(array, function (d) { return d.sales; });
+    var maxinc = d3.max(array, function (d) { return d.sales; });
+
+    var xaxis = chart.selectAll("x")
+        .data(array)
+        .enter();
+
+    var points = xaxis.append("text")
+        .attr("x", function (d) { return scale(mininx, maxinx, 55, w - 45, d.year); })
+        .attr("y", 15)
+        .text(function (d) { return d.year; });
+
+    var yaxis = chart.selectAll("y")
+        .data(array)
+        .enter();
+
+    var points = yaxis.append("text")
+        .attr("x", 5)
+        .attr("y", function (d) { return scale(mininy, maxiny, 60, h - 20, d.books); })
+        .text(function (d) { return d.books; });
+    
+//fillings
+
+    var scatterarray = chart.selectAll("b")
+        .data(array)
+        .enter();
+
+    var circle = scatterarray.append("circle")
+        .attr("cx", function (d) { return scale(mininx, maxinx, 70, w - 30, d.year); })
+        .attr("cy", function (d) { return scale(mininy, maxiny, 55, h - 30, d.books); })
+        .attr("r", function (d) { return scale(mininr, maxinr, 5, 20, d.readers); })
+        .attr("fill", function (d) { return "#" + "00" + scale(mininc, maxinc, 225, 125, d.sales).toString(16) + scale(mininc, maxinc, 225, 125, d.sales).toString(16); })
+        .attr("stroke", "grey");
+
+</script>
+
+
+</body>
